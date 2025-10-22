@@ -272,9 +272,17 @@ def main():
     with col1:
         st.markdown("### 💬 Posez votre question")
         
+        # Récupérer l'exemple sélectionné s'il existe
+        default_value = ""
+        if 'selected_example' in st.session_state:
+            default_value = st.session_state.selected_example
+            # Nettoyer après utilisation
+            del st.session_state.selected_example
+        
         # Zone de saisie de la question
         query = st.text_area(
             "Que voulez-vous savoir sur Kaizen ?",
+            value=default_value,
             height=100,
             placeholder="Ex: Comment créer un devis ? Comment fonctionne l'AICI ? Comment générer une facture ?",
             key="query_input"
@@ -402,7 +410,8 @@ def main():
         for example in example_questions:
             if st.button(f"💡 {example}", key=f"example_{hashlib.md5(example.encode()).hexdigest()[:8]}", 
                         use_container_width=True):
-                st.session_state.query_input = example
+                # Sauvegarder la question sélectionnée dans session_state
+                st.session_state.selected_example = example
                 st.rerun()
     
     # Footer
