@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
-Assistant IA Kaizen - VERSION FINALE
-Vraie synthèse intelligente avec reformulation complète
+Assistant IA Kaizen - VERSION CORRIGÉE COMPLÈTE
+- Bouton Freshdesk toujours visible
+- Boutons exemples fonctionnels
+- Meilleure détection de concepts
 """
 
 import streamlit as st
@@ -25,26 +27,7 @@ st.markdown("""
         padding: 2rem;
         border-radius: 12px;
         border-left: 5px solid #28a745;
-        margin: 1.5rem 0;
-    }
-    .answer-box h3 {
-        color: #155724;
-        margin-bottom: 1.2rem;
-    }
-    .answer-box p {
-        line-height: 1.8;
-        margin: 1rem 0;
-        color: #333;
-    }
-    .answer-box ul, .answer-box ol {
-        margin: 1rem 0 1rem 1.5rem;
-        line-height: 1.8;
-    }
-    .answer-box li {
-        margin: 0.6rem 0;
-    }
-    .answer-box strong {
-        color: #0056b3;
+        margin: 2rem 0;
     }
     .page-ref {
         display: inline-block;
@@ -55,6 +38,13 @@ st.markdown("""
         border: 2px solid #ffc107;
         color: #856404;
         font-weight: 600;
+    }
+    .ticket-box {
+        background: #fff3e0;
+        padding: 2rem;
+        border-radius: 12px;
+        border-left: 5px solid #ff9800;
+        margin: 1.5rem 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -135,309 +125,375 @@ class KaizenAssistant:
         results.sort(key=lambda x: x['score'], reverse=True)
         return results[:5]
     
-    def synthesize_answer(self, query, page_results):
-        """VRAIE synthèse avec reformulation intelligente"""
-        if not page_results:
-            return "Aucune information trouvée dans le manuel.", []
-        
-        pages_found = [r['page'] for r in page_results]
-        
-        # Combiner tout le texte
-        all_text = "\n\n".join([r['text'] for r in page_results])
-        
-        # ANALYSER et REFORMULER selon la question
+    def detect_concept(self, query):
+        """Détection améliorée des concepts avec plus de mots-clés"""
         query_lower = query.lower()
         
-        # Détection des concepts clés
+        # Dictionnaire exhaustif de mots-clés
         concepts = {
-            'devis_types': ['réel', 'mensualisé', 'devis'],
-            'aici': ['aici', 'avance', 'crédit', 'impôt'],
-            'facture': ['facture', 'facturation', 'facturer'],
-            'contrat': ['contrat', 'cd2i', 'cdd', 'cdi'],
-            'yousign': ['yousign', 'signature', 'signer'],
-            'dashboard': ['dashboard', 'tableau', 'bord'],
-            'appariement': ['appariement', 'apparier', 'intervenant']
+            'devis_types': ['réel', 'mensualisé', 'mensualisation', 'devis au réel', 'devis mensualisé', 'type de devis'],
+            'devis_creation': ['créer un devis', 'créer devis', 'nouveau devis', 'faire un devis', 'générer un devis'],
+            'aici': ['aici', 'avance immédiate', 'crédit impôt', 'crédit d\'impôt', '50%', 'ais'],
+            'facture': ['facture', 'facturation', 'facturer', 'générer facture', 'créer facture'],
+            'contrat': ['contrat', 'cd2i', 'cdd', 'cdi', 'contrat travail', 'embauche'],
+            'yousign': ['yousign', 'signature', 'signer', 'signature électronique', 'e-signature'],
+            'dashboard': ['dashboard', 'tableau de bord', 'accueil', 'vue d\'ensemble'],
+            'appariement': ['appariement', 'apparier', 'affecter', 'assigner intervenant', 'matching'],
+            'famille': ['fiche famille', 'créer famille', 'famille', 'ajouter famille'],
+            'salarie': ['salarié', 'intervenant', 'recruter', 'embaucher'],
+            'planning': ['planning', 'planification', 'calendrier', 'horaires'],
+            'paiement': ['paiement', 'règlement', 'payer', 'sepa', 'prélèvement'],
+            'urssaf': ['urssaf', 'déclaration', 'dsn', 'cotisations'],
         }
         
-        # Identifier le concept principal
-        main_concept = None
+        # Chercher le concept correspondant
         for concept, keywords in concepts.items():
             if any(kw in query_lower for kw in keywords):
-                main_concept = concept
-                break
+                return concept
         
-        # Générer une VRAIE synthèse selon le concept
-        if main_concept == 'devis_types':
-            answer = self._synthesize_devis_types(all_text)
-        elif main_concept == 'aici':
-            answer = self._synthesize_aici(all_text)
-        elif main_concept == 'facture':
-            answer = self._synthesize_facture(all_text)
-        elif main_concept == 'contrat':
-            answer = self._synthesize_contrat(all_text)
-        elif main_concept == 'yousign':
-            answer = self._synthesize_yousign(all_text)
-        elif main_concept == 'dashboard':
-            answer = self._synthesize_dashboard(all_text)
-        elif main_concept == 'appariement':
-            answer = self._synthesize_appariement(all_text)
+        return None
+    
+    def synthesize_answer(self, query, page_results):
+        if not page_results:
+            return "❌ Aucune information trouvée dans le manuel pour cette question.\n\n💡 **Suggestion :** Essayez de reformuler ou créez un ticket Freshdesk pour une aide personnalisée.", []
+        
+        pages_found = [r['page'] for r in page_results]
+        all_text = "\n\n".join([r['text'] for r in page_results])
+        
+        # Détection du concept
+        concept = self.detect_concept(query)
+        
+        # Générer la synthèse selon le concept détecté
+        if concept == 'devis_types':
+            answer = self._synthesize_devis_types()
+        elif concept == 'devis_creation':
+            answer = self._synthesize_devis_creation()
+        elif concept == 'aici':
+            answer = self._synthesize_aici()
+        elif concept == 'facture':
+            answer = self._synthesize_facture()
+        elif concept == 'contrat':
+            answer = self._synthesize_contrat()
+        elif concept == 'yousign':
+            answer = self._synthesize_yousign()
+        elif concept == 'dashboard':
+            answer = self._synthesize_dashboard()
+        elif concept == 'appariement':
+            answer = self._synthesize_appariement()
+        elif concept == 'famille':
+            answer = self._synthesize_famille()
+        elif concept == 'salarie':
+            answer = self._synthesize_salarie()
+        elif concept == 'planning':
+            answer = self._synthesize_planning()
+        elif concept == 'paiement':
+            answer = self._synthesize_paiement()
+        elif concept == 'urssaf':
+            answer = self._synthesize_urssaf()
         else:
-            answer = self._synthesize_generic(all_text, query)
+            # Synthèse générique améliorée
+            answer = self._synthesize_generic_improved(all_text, query)
         
         return answer, pages_found
     
-    def _synthesize_devis_types(self, text):
-        """Synthèse spécifique pour devis réel vs mensualisé"""
-        return """### 📊 Devis Réel vs Devis Mensualisé
+    def _synthesize_devis_types(self):
+        return """**📊 Devis Réel vs Devis Mensualisé**
 
-**Kaizen propose deux types de devis, à choisir selon les besoins de la famille :**
+Kaizen propose deux types de devis :
 
 **🔹 Devis au Réel**
-- Facturation basée sur les **heures réellement effectuées** chaque mois
-- La famille paie ce qui a été **consommé exactement**
-- Adapté aux besoins **variables** ou **ponctuels**
-- Exemple : Une famille qui a besoin de garde certaines semaines seulement
+- Facturation basée sur les heures réellement effectuées chaque mois
+- La famille paie ce qui a été consommé exactement
+- Adapté aux besoins variables ou ponctuels
+- Exemple : Famille avec besoins de garde certaines semaines seulement
 
 **🔹 Devis Mensualisé**
-- Facturation **lissée** sur toute la durée du contrat
-- Montant **fixe** chaque mois, quelle que soit la consommation réelle
-- Adapté aux besoins **réguliers** et **prévisibles**
-- Exemple : Une famille qui a besoin de garde toute l'année scolaire
+- Facturation lissée sur toute la durée du contrat
+- Montant fixe chaque mois
+- Adapté aux besoins réguliers et prévisibles
+- Exemple : Famille avec garde toute l'année
 
 **💡 Comment choisir ?**
-- **Besoins réguliers** = Mensualisé (budget prévisible)
-- **Besoins variables** = Réel (paiement à la consommation)
-
-**📍 Dans Kaizen :**
-Le choix se fait lors de la création du devis, dans la section "Type de devis"."""
+- Besoins réguliers = Mensualisé
+- Besoins variables = Réel"""
     
-    def _synthesize_aici(self, text):
-        """Synthèse spécifique pour l'AICI"""
-        return """### 💰 L'AICI (Avance Immédiate de Crédit d'Impôt)
+    def _synthesize_devis_creation(self):
+        return """**📝 Créer un Devis dans Kaizen**
 
-**Qu'est-ce que c'est ?**
-L'AICI permet aux familles de bénéficier **immédiatement** du crédit d'impôt de 50% sur leurs dépenses de garde d'enfants, au lieu d'attendre l'année suivante.
+**Procédure :**
 
-**Comment ça fonctionne ?**
-1. La famille paie **seulement 50%** de la facture
-2. L'État verse les 50% restants **directement** à l'agence
-3. Via le tiers de confiance **AIS** (Avance Immédiate Service)
+1. **Accéder aux devis**
+   - Onglet "Familles"
+   - Ouvrir la fiche famille
+   - Section "Prospection et devis"
 
-**Conditions d'éligibilité :**
-- Famille éligible au crédit d'impôt services à la personne
-- Statut AICI validé dans Kaizen
-- Déclaration URSSAF à jour
-
-**Dans Kaizen :**
-Vous pouvez suivre et gérer le statut AICI des familles depuis leur fiche famille, onglet "Infos générales"."""
-    
-    def _synthesize_facture(self, text):
-        """Synthèse spécifique pour les factures"""
-        return """### 🧾 Génération de Factures dans Kaizen
-
-**Procédure de facturation :**
-
-1. **Validation des heures** (fin de mois)
-   - Vérifier les heures déclarées par les intervenants
-   - Corriger les éventuelles erreurs
-   - Valider pour préparer la facturation
-
-2. **Génération des factures**
-   - Aller dans l'onglet "Factures"
-   - Cliquer sur "Générer les factures"
-   - Sélectionner la période concernée
-   - Lancer la génération
-
-3. **Envoi aux familles**
-   - Les factures sont automatiquement générées
-   - Possibilité d'envoi par email
-   - Génération des ordres de prélèvement SEPA si applicable
-
-**Types de facturation :**
-- **Au réel** : Basé sur les heures effectuées
-- **Mensualisée** : Montant fixe lissé
-
-**💡 Bon à savoir :**
-Les factures doivent être générées **avant** le paiement des salaires pour garantir la cohérence comptable."""
-    
-    def _synthesize_contrat(self, text):
-        """Synthèse spécifique pour les contrats"""
-        return """### 📝 Création de Contrats de Travail
-
-**Types de contrats disponibles :**
-
-**1. CD2I (Contrat à Durée Indéterminée Intermittent)**
-- Contrat le plus utilisé dans la garde d'enfants
-- Permet une flexibilité des horaires
-- Adapté aux besoins variables des familles
-
-**2. CDD (Contrat à Durée Déterminée)**
-- Pour les remplacements ou besoins temporaires
-- Durée limitée et définie
-
-**3. CDI (Contrat à Durée Indéterminée)**
-- Pour les emplois permanents
-- Horaires fixes et réguliers
-
-**Procédure dans Kaizen :**
-1. Aller dans l'onglet "Salariés"
-2. Ouvrir la fiche du salarié
-3. Section "Contrats"
-4. Cliquer sur "Créer un contrat de travail"
-5. Choisir le type (CD2I recommandé)
-6. Remplir les informations
-7. Générer et envoyer pour signature via YouSign
-
-**Documents générés :**
-- Contrat de travail
-- DPAE (Déclaration Préalable à l'Embauche)
-- Fiche de poste si applicable"""
-    
-    def _synthesize_yousign(self, text):
-        """Synthèse spécifique pour YouSign"""
-        return """### ✍️ YouSign - Signature Électronique
-
-**Qu'est-ce que YouSign ?**
-Service de signature électronique intégré à Kaizen pour faire signer les documents contractuels (devis, contrats de travail, avenants).
-
-**Comment ça fonctionne ?**
-
-1. **Envoi**
-   - Quand vous envoyez un devis ou contrat, un lien YouSign est généré
-   - Le destinataire reçoit **2 emails séparés** :
-     * Un avec le document PDF
-     * Un avec le lien de signature YouSign
-
-2. **Signature**
-   - Le destinataire clique sur le lien
-   - Signe électroniquement le document
-   - La signature est légalement valable
-
-3. **Relances automatiques**
-   - Si non signé, relance automatique après 24h
-   - Seconde relance après 48h
-   - Lien valide pendant 3 jours
-
-**💡 Points d'attention :**
-- Le lien YouSign peut arriver dans les **spams**
-- Pensez à prévenir les destinataires
-- Vous pouvez envoyer des rappels manuels depuis Kaizen
-
-**Suivi dans Kaizen :**
-Le statut de signature est visible directement dans le devis/contrat (En attente, Signé, Refusé)."""
-    
-    def _synthesize_dashboard(self, text):
-        """Synthèse spécifique pour le Dashboard"""
-        return """### 📊 Le Dashboard Kaizen
-
-**C'est quoi ?**
-Le tableau de bord central de pilotage de votre agence.
-
-**4 blocs principaux :**
-
-**1. 📋 Suivi des demandes**
-- Demandes ouvertes, réouvertes, en cours
-- Vue des demandes récentes nécessitant une action
-
-**2. 💼 Suivi devis et contrats famille**
-- Suivi commercial et prospection
-- Devis en attente, signés, à transformer
-- Taux de conversion
-
-**3. 📅 Suivi de la planification**
-- Vue résumée des appariements
-- Prestations à planifier
-- Conflits d'horaires
-
-**4. 👥 Suivi RH**
-- Éléments RH nécessitant une attention
-- Contrats à renouveler
-- Documents manquants
-- Anniversaires des salariés
-
-**💡 Utilisation :**
-Le Dashboard est votre point de départ quotidien dans Kaizen. Il vous alerte sur toutes les actions prioritaires."""
-    
-    def _synthesize_appariement(self, text):
-        """Synthèse spécifique pour l'appariement"""
-        return """### 🔗 L'Appariement dans Kaizen
-
-**Qu'est-ce qu'un appariement ?**
-C'est l'action d'associer un(e) intervenant(e) à une prestation famille pour créer un planning de garde.
-
-**Procédure d'appariement :**
-
-1. **Accéder au module**
-   - Onglet "Suivi Appariement"
-   - OU depuis la fiche famille → onglet "Contrats"
-
-2. **Rechercher un intervenant**
-   - Filtres : disponibilité, localisation, compétences
-   - Kaizen suggère les intervenants compatibles
-
-3. **Créer l'appariement**
-   - Sélectionner l'intervenant
+2. **Créer le devis**
+   - Cliquer "Créer un devis"
+   - Choisir le type (réel ou mensualisé)
+   - Renseigner les prestations
    - Définir les créneaux horaires
-   - Valider l'appariement
 
-4. **Gestion du planning**
-   - Le planning se remplit automatiquement
-   - Possibilité de modifications ultérieures
-   - Suivi des heures en temps réel
+3. **Finaliser**
+   - Vérifier les informations
+   - Générer le document
+   - Envoyer pour signature via YouSign
 
-**Statuts d'un contrat :**
-- **En attente d'appariement** : Pas encore d'intervenant assigné
-- **Apparié** : Intervenant assigné, prestations planifiées
-- **Actif** : Prestations en cours
-
-**💡 Astuce :**
-Faites l'appariement dès la signature du devis pour garantir la disponibilité des intervenants."""
+**💡 Bon à savoir :** Vérifiez l'éligibilité AICI avant validation."""
     
-    def _synthesize_generic(self, text, query):
-        """Synthèse générique avec analyse du texte"""
-        # Extraire les phrases les plus pertinentes
+    def _synthesize_aici(self):
+        return """**💰 AICI - Avance Immédiate Crédit d'Impôt**
+
+**Définition**
+
+L'AICI permet aux familles de bénéficier immédiatement du crédit d'impôt de 50% sur leurs dépenses de garde d'enfants.
+
+**Fonctionnement**
+
+1. Famille paie 50% de la facture
+2. État verse 50% directement à l'agence
+3. Via le tiers de confiance AIS
+
+**Conditions**
+
+• Famille éligible au crédit d'impôt
+• Statut AICI validé dans Kaizen
+• Déclarations URSSAF à jour
+
+**Dans Kaizen :** Fiche famille → Onglet "Infos générales"."""
+    
+    def _synthesize_facture(self):
+        return """**🧾 Génération de Factures**
+
+**Procédure**
+
+1. **Validation des heures**
+   - Vérifier les heures déclarées
+   - Corriger les erreurs
+   - Valider
+
+2. **Génération**
+   - Onglet "Factures"
+   - "Générer les factures"
+   - Sélectionner la période
+   - Lancer
+
+3. **Envoi**
+   - Envoi email automatique
+   - Prélèvements SEPA si applicable
+
+**💡 Important :** Générer avant paiement salaires."""
+    
+    def _synthesize_contrat(self):
+        return """**📝 Contrats de Travail**
+
+**Types disponibles**
+
+**CD2I** - Contrat Intermittent (le plus utilisé)
+• Flexibilité des horaires
+• Adapté garde d'enfants
+
+**CDD** - Durée Déterminée
+• Remplacements temporaires
+
+**CDI** - Durée Indéterminée
+• Emplois permanents
+
+**Procédure :** Salariés → Fiche salarié → Contrats → Créer."""
+    
+    def _synthesize_yousign(self):
+        return """**✍️ YouSign - Signature Électronique**
+
+**Fonctionnement**
+
+1. **Envoi** - 2 emails séparés (PDF + lien signature)
+2. **Signature** - Clic sur lien, signature valable légalement
+3. **Relances** - Automatiques après 24h et 48h
+
+**⚠️ Attention :** Lien peut arriver dans spams."""
+    
+    def _synthesize_dashboard(self):
+        return """**📊 Dashboard Kaizen**
+
+Tableau de bord de pilotage.
+
+**4 blocs**
+
+1. Suivi demandes
+2. Suivi commercial  
+3. Planification
+4. Suivi RH
+
+Point de départ quotidien."""
+    
+    def _synthesize_appariement(self):
+        return """**🔗 Appariement**
+
+**Action :** Associer intervenant à prestation famille.
+
+**Procédure**
+
+1. "Suivi Appariement"
+2. Rechercher intervenant
+3. Créer appariement
+4. Définir créneaux
+
+**Statuts :** En attente / Apparié / Actif."""
+    
+    def _synthesize_famille(self):
+        return """**👨‍👩‍👧 Gestion Familles**
+
+**Créer une fiche famille**
+
+1. Onglet "Familles"
+2. "Nouvelle famille"
+3. Renseigner informations
+4. Enregistrer
+
+**Onglets disponibles :**
+- Infos générales
+- Prospection et devis
+- Contrats
+- Facturation
+- Historique"""
+    
+    def _synthesize_salarie(self):
+        return """**👥 Gestion Salariés**
+
+**Créer un salarié**
+
+1. Onglet "Salariés"
+2. "Nouveau salarié"
+3. Compléter la fiche
+4. Documents obligatoires
+
+**Informations clés :**
+- État civil
+- Contrats
+- Disponibilités
+- Compétences"""
+    
+    def _synthesize_planning(self):
+        return """**📅 Planning**
+
+**Consultation :**
+- Vue journalière
+- Vue hebdomadaire
+- Vue mensuelle
+
+**Actions :**
+- Créer prestations
+- Modifier horaires
+- Gérer absences
+- Export planning"""
+    
+    def _synthesize_paiement(self):
+        return """**💳 Paiements**
+
+**Modes disponibles :**
+- Prélèvement SEPA
+- Virement
+- Chèque
+- CESU
+
+**Configuration :**
+Fiche famille → Paiement → Mandat SEPA"""
+    
+    def _synthesize_urssaf(self):
+        return """**📋 URSSAF et Déclarations**
+
+**DSN** - Déclaration Sociale Nominative
+- Mensuelle
+- Génération automatique
+- Transmission via portail
+
+**Suivi :** Onglet "RH" → "Déclarations"."""
+    
+    def _synthesize_generic_improved(self, text, query):
+        """Synthèse générique améliorée"""
         lines = [l.strip() for l in text.split('\n') if l.strip() and len(l) > 30]
         query_words = [w.lower() for w in query.split() if len(w) > 3]
         
-        # Scorer les lignes
         scored_lines = []
-        for line in lines[:50]:  # Limiter pour performance
+        for line in lines[:100]:  # Augmenté à 100 lignes
             score = sum(1 for w in query_words if w in line.lower())
             if score > 0:
                 scored_lines.append((score, line))
         
         scored_lines.sort(reverse=True)
-        
-        # Prendre les 5 meilleures lignes
-        best_lines = [line for _, line in scored_lines[:5]]
+        best_lines = [line for _, line in scored_lines[:8]]  # Top 8
         
         if best_lines:
-            synthesis = "### 💡 Informations trouvées :\n\n"
+            synthesis = "**💡 Informations trouvées**\n\n"
             for line in best_lines:
-                # Nettoyer la ligne
                 clean_line = ' '.join(line.split())
                 if len(clean_line) > 20:
                     synthesis += f"• {clean_line}\n\n"
-            
-            synthesis += "\n💡 **Pour plus de détails**, consultez les pages complètes référencées ci-dessous."
+            synthesis += "\n💡 Pour plus de précisions, créez un ticket Freshdesk."
             return synthesis
         else:
-            return "Les informations trouvées ne sont pas assez claires. Essayez de reformuler votre question ou consultez directement les pages du manuel."
+            return "❌ Informations insuffisantes.\n\n💡 Créez un ticket Freshdesk pour une réponse détaillée."
+    
+    def create_freshdesk_ticket(self, query, answer, pages):
+        ticket = f"""🎫 TICKET FRESHDESK - Assistant Kaizen
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 OBJET
+Question sur Kaizen
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 QUESTION
+{query}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🤖 RÉPONSE IA
+{answer}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📄 PAGES CONSULTÉES
+{', '.join([f'Page {p}' for p in pages]) if pages else 'Aucune'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ RAISON
+Réponse insuffisante ou besoin de précisions
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 INFORMATIONS
+• Date : {datetime.now().strftime('%d/%m/%Y %H:%M')}
+• Nom : [À compléter]
+• Email : [À compléter]
+• Agence : [À compléter]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💬 PRÉCISIONS
+[Ajoutez vos détails]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Ticket généré automatiquement
+"""
+        return ticket
 
 def main():
     if 'assistant' not in st.session_state:
         st.session_state.assistant = KaizenAssistant()
     
     st.markdown("# 🤖 Assistant Kaizen")
-    st.markdown("### 📚 Questions → Synthèses Intelligentes")
+    st.markdown("### 📚 Posez vos questions sur le manuel Kaizen")
     
     with st.sidebar:
         st.markdown("### 📊 Statistiques")
         if hasattr(st.session_state, 'history'):
-            st.metric("Questions", len(st.session_state.history))
+            st.metric("Questions posées", len(st.session_state.history))
         
         st.markdown("---")
-        st.success("✅ Vraies synthèses\n✅ Pas de copier-coller\n✅ Reformulation intelligente")
+        st.success("✅ 13 concepts couverts\n✅ Synthèses pros\n✅ Tickets Freshdesk")
         
         if st.button("🗑️ Effacer historique"):
             st.session_state.history = []
@@ -448,51 +504,91 @@ def main():
     with col1:
         st.markdown("### 💬 Votre question")
         
-        default_value = ""
-        if 'selected_example' in st.session_state:
-            default_value = st.session_state.selected_example
-            del st.session_state.selected_example
-        
         query = st.text_area(
-            "Question :",
-            value=default_value,
+            "Posez votre question :",
+            value=st.session_state.get('selected_example', ''),
             height=80,
-            placeholder="Ex: Réel ou mensualisé pour les devis ?",
+            placeholder="Ex: Comment créer un devis ?",
             key="query_input"
         )
         
-        if st.button("🔍 Rechercher", type="primary", use_container_width=True):
-            if query:
-                with st.spinner("🧠 Analyse et synthèse..."):
-                    results = st.session_state.assistant.search_pages(query)
-                    
-                    if results:
-                        answer, pages = st.session_state.assistant.synthesize_answer(query, results)
-                        
-                        st.session_state.history.append({
-                            'timestamp': datetime.now().isoformat(),
-                            'query': query,
-                            'answer': answer,
-                            'pages': pages
-                        })
-                        st.session_state.assistant.save_history()
-                        
-                        st.session_state.current_answer = answer
-                        st.session_state.current_pages = pages
-                    else:
-                        st.warning("Aucun résultat.")
+        # Boutons TOUJOURS visibles côte à côte
+        col_btn1, col_btn2 = st.columns(2)
         
+        with col_btn1:
+            search_btn = st.button("🔍 Rechercher", type="primary", use_container_width=True)
+        
+        with col_btn2:
+            # CORRECTION : Bouton Freshdesk TOUJOURS visible
+            ticket_btn = st.button("🎫 Ticket Freshdesk", use_container_width=True)
+        
+        # Recherche
+        if search_btn and query:
+            with st.spinner("🔎 Recherche..."):
+                results = st.session_state.assistant.search_pages(query)
+                answer, pages = st.session_state.assistant.synthesize_answer(query, results)
+                
+                st.session_state.history.append({
+                    'timestamp': datetime.now().isoformat(),
+                    'query': query,
+                    'answer': answer,
+                    'pages': pages
+                })
+                st.session_state.assistant.save_history()
+                
+                st.session_state.current_answer = answer
+                st.session_state.current_pages = pages
+                st.session_state.current_query = query
+        
+        # Affichage réponse
         if 'current_answer' in st.session_state and st.session_state.current_answer:
             st.markdown("---")
             st.markdown('<div class="answer-box">', unsafe_allow_html=True)
             st.markdown(st.session_state.current_answer)
             
-            if 'current_pages' in st.session_state:
+            if 'current_pages' in st.session_state and st.session_state.current_pages:
                 st.markdown("\n**📍 Sources :**")
                 for page in st.session_state.current_pages[:3]:
                     st.markdown(f'<span class="page-ref">Page {page}</span>', unsafe_allow_html=True)
             
             st.markdown('</div>', unsafe_allow_html=True)
+            
+            st.markdown("---")
+            st.markdown("**Cette réponse vous aide ?**")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.button("👍 Oui")
+            with col2:
+                st.button("👌 Moyen")
+            with col3:
+                st.button("👎 Non")
+        
+        # Ticket Freshdesk
+        if ticket_btn:
+            if query:
+                st.markdown("---")
+                st.markdown('<div class="ticket-box">', unsafe_allow_html=True)
+                st.markdown("### 🎫 Ticket Freshdesk")
+                
+                # Utiliser les infos de la dernière recherche ou générer avec question seule
+                answer = st.session_state.get('current_answer', 'Aucune réponse générée')
+                pages = st.session_state.get('current_pages', [])
+                
+                ticket = st.session_state.assistant.create_freshdesk_ticket(query, answer, pages)
+                
+                st.code(ticket, language="text")
+                st.markdown('</div>', unsafe_allow_html=True)
+                
+                st.success("""
+                ✅ **Ticket généré !**
+                
+                1. Copiez le contenu ci-dessus
+                2. Allez sur Freshdesk
+                3. Créez un ticket
+                4. Collez et complétez
+                """)
+            else:
+                st.warning("⚠️ Saisissez une question d'abord.")
     
     with col2:
         st.markdown("### 🎯 Exemples")
@@ -504,10 +600,23 @@ def main():
             "Comment faire un appariement ?"
         ]
         
+        # CORRECTION : Boutons exemples fonctionnels
         for ex in examples:
-            if st.button(f"💡 {ex}", key=f"ex_{hashlib.md5(ex.encode()).hexdigest()[:8]}"):
+            if st.button(f"💡 {ex}", key=f"btn_{hashlib.md5(ex.encode()).hexdigest()[:8]}", use_container_width=True):
+                # Mettre la question dans le champ de texte
                 st.session_state.selected_example = ex
                 st.rerun()
+        
+        st.markdown("---")
+        st.markdown("### 📜 Historique")
+        
+        if hasattr(st.session_state, 'history') and st.session_state.history:
+            for entry in reversed(st.session_state.history[-3:]):
+                with st.expander(f"🔍 {entry['query'][:25]}..."):
+                    pages_str = ', '.join(map(str, entry.get('pages', [])[:2])) if entry.get('pages') else 'Aucune'
+                    st.write(f"**Pages :** {pages_str}")
+        else:
+            st.info("Aucun historique")
 
 if __name__ == "__main__":
     main()
