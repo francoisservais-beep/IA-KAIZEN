@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maquette - Assistant Kaizen IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .mockup-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        /* Browser Header */
+        .browser-header {
+            background: #e0e0e0;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #ccc;
+        }
+        
+        .browser-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .browser-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .browser-button.close { background: #ff5f56; }
+        .browser-button.minimize { background: #ffbd2e; }
+        .browser-button.maximize { background: #27c93f; }
+        
+        .browser-url {
+            flex: 1;
+            background: white;
+            padding: 6px 15px;
+            border-radius: 6px;
+            margin-left: 10px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* Main Layout */
+        .app-layout {
+            display: flex;
+            height: 800px;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            overflow-y: auto;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        
+        .logo h2 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .logo p {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+        
+        .stats-section {
+            margin: 30px 0;
+        }
+        
+        .stats-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .sidebar-info {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            font-size: 0.85em;
+            line-height: 1.6;
+        }
+        
+        .sidebar-button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95em;
+        }
+        
+        .sidebar-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fafafa;
+        }
+        
+        /* Header */
+        .content-header {
+            background: white;
+            padding: 30px 40px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .content-header h1 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .content-header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        /* Content Body */
+        .content-body {
+            flex: 1;
+            padding: 30px 40px;
+            overflow-y: auto;
+        }
+        
+        .question-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .question-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+        
+        .question-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            flex: 1;
+        }
+        
+        .btn-secondary:hover {
+            background: #f5f7ff;
+        }
+        
+        /* Answer Section */
+        .answer-section {
+            background: #f0f8ff;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #4CAF50;
+            margin-bottom: 25px;
+        }
+        
+        .answer-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: #2e7d32;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        
+        .answer-text {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .references {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .references h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        
+        .references ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .references li {
+            padding: 5px 0;
+            color: #856404;
+        }
+        
+        .references li:before {
+            content: "📍 ";
+            margin-right: 8px;
+        }
+        
+        /* Feedback Section */
+        .feedback-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .feedback-title {
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .feedback-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .feedback-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95em;
+        }
+        
+        .feedback-btn:hover {
+            border-color: #667eea;
+            background: #f5f7ff;
+            transform: translateY(-2px);
+        }
+        
+        /* Right Sidebar - History */
+        .history-sidebar {
+            width: 350px;
+            background: white;
+            border-left: 2px solid #e0e0e0;
+            padding: 30px 20px;
+            overflow-y: auto;
+        }
+        
+        .history-header {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .history-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .history-item:hover {
+            background: #f0f0f0;
+            transform: translateX(-5px);
+        }
+        
+        .history-query {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        .history-meta {
+            font-size: 0.8em;
+            color: #999;
+        }
+        
+        .history-meta span {
+            margin-right: 15px;
+        }
+        
+        .examples-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .example-tag {
+            display: inline-block;
+            padding: 8px 15px;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .example-tag:hover {
+            background: #1976d2;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .answer-section {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .app-layout {
+                flex-direction: column;
+            }
+            
+            .sidebar, .history-sidebar {
+                width: 100%;
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mockup-container">
+        <!-- Browser Header -->
+        <div class="browser-header">
+            <div class="browser-buttons">
+                <div class="browser-button close"></div>
+                <div class="browser-button minimize"></div>
+                <div class="browser-button maximize"></div>
+            </div>
+            <div class="browser-url">🌐 http://localhost:8501 - Assistant Kaizen IA</div>
+        </div>
+        
+        <!-- Main App Layout -->
+        <div class="app-layout">
+            <!-- Left Sidebar -->
+            <div class="sidebar">
+                <div class="logo">
+                    <h2>🤖 KAIZEN</h2>
+                    <p>Assistant IA</p>
+                </div>
+                
+                <div class="stats-section">
+                    <h3>📊 Statistiques</h3>
+                    <div class="stat-item">
+                        <span class="stat-number">47</span>
+                        <span class="stat-label">Questions posées</span>
+                    </div>
+                </div>
+                
+                <div class="sidebar-info">
+                    <h4 style="margin-bottom: 10px;">ℹ️ À propos</h4>
+                    <p>Cet assistant utilise l'IA pour vous aider à naviguer dans le manuel Kaizen.</p>
+                    <br>
+                    <p><strong>Fonctionnalités :</strong></p>
+                    <p>• 🔍 Recherche intelligente<br>
+                    • 💡 Réponses contextuelles<br>
+                    • 🎫 Tickets Freshdesk<br>
+                    • 📝 Historique</p>
+                </div>
+                
+                <button class="sidebar-button">🗑️ Effacer l'historique</button>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Header -->
+                <div class="content-header">
+                    <h1>🤖 Assistant IA Kaizen</h1>
+                    <p>📚 Posez vos questions sur le manuel opératoire Kaizen (261 pages)</p>
+                </div>
+                
+                <!-- Content Body -->
+                <div class="content-body">
+                    <!-- Question Section -->
+                    <div class="question-section">
+                        <div class="section-title">
+                            💬 Posez votre question
+                        </div>
+                        <textarea class="question-input" placeholder="Ex: Comment créer un devis ? Comment fonctionne l'AICI ? Comment générer une facture ?">Comment créer un devis dans Kaizen ?</textarea>
+                        
+                        <div class="button-group">
+                            <button class="btn btn-primary">🔍 Rechercher</button>
+                            <button class="btn btn-secondary">🎫 Créer un ticket Freshdesk</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Answer Section -->
+                    <div class="answer-section">
+                        <div class="answer-header">
+                            ✅ Réponse
+                        </div>
+                        
+                        <div class="answer-text">
+                            <p><strong>D'après le manuel Kaizen, voici comment créer un devis :</strong></p>
+                            <br>
+                            <p>Pour créer un devis dans Kaizen, vous devez suivre ces étapes :</p>
+                            <br>
+                            <ol style="padding-left: 20px; line-height: 2;">
+                                <li>Rendez-vous dans l'onglet <strong>"Familles"</strong></li>
+                                <li>Sélectionnez la fiche famille concernée ou créez-en une nouvelle</li>
+                                <li>Cliquez sur <strong>"Prospection et devis"</strong></li>
+                                <li>Cliquez sur le bouton <strong>"Créer un devis"</strong></li>
+                                <li>Remplissez les informations requises :
+                                    <ul style="padding-left: 20px; margin-top: 10px;">
+                                        <li>Type de devis (réel ou mensualisé)</li>
+                                        <li>Informations sur les prestations</li>
+                                        <li>Créneaux horaires (global ou précis)</li>
+                                        <li>Tarification selon la grille applicable</li>
+                                    </ul>
+                                </li>
+                                <li>Vérifiez l'éligibilité PAJE si applicable</li>
+                                <li>Enregistrez le devis</li>
+                                <li>Envoyez-le pour signature via YouSign</li>
+                            </ol>
+                            <br>
+                            <p>💡 <strong>Conseil :</strong> N'oubliez pas de vérifier le contexte dans lequel vous travaillez (GROUPE, SOCIÉTÉ ou AGENCE) car cela peut influencer les options disponibles.</p>
+                        </div>
+                        
+                        <div class="references">
+                            <h4>📍 Références dans le manuel :</h4>
+                            <ul>
+                                <li>Section "Créer un devis / un contrat" (pages 35-42)</li>
+                                <li>Section "Comment commencer la création d'un devis ?" (page 36)</li>
+                                <li>Section "Devis au réel VS Devis mensualisé" (page 39)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="feedback-section">
+                            <div class="feedback-title"><strong>Cette réponse vous a-t-elle été utile ?</strong></div>
+                            <div class="feedback-buttons">
+                                <button class="feedback-btn">👍 Oui, parfait</button>
+                                <button class="feedback-btn">👌 Partiellement</button>
+                                <button class="feedback-btn">👎 Non</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Sidebar - History -->
+            <div class="history-sidebar">
+                <div class="history-header">
+                    📜 Historique
+                </div>
+                
+                <div class="history-item">
+                    <div class="history-query">🔍 Comment créer un devis dans Kaizen ?</div>
+                    <div class="history-meta">
+                        <span>📅 22/10/2025</span>
+                        <span>✅ 5 résultats</span>
+                    </div>
+                </div>
+                
+                <div class="history-item">
+                    <div class="history-query">🔍 Qu'est-ce que l'AICI ?</div>
+                    <div class="history-meta">
+                        <span>📅 22/10/2025</span>
+                        <span>✅ 3 résultats</span>
+                    </div>
+                </div>
+                
+                <div class="history-item">
+                    <div class="history-query">🔍 Comment générer une facture ?</div>
+                    <div class="history-meta">
+                        <span>📅 21/10/2025</span>
+                        <span>✅ 4 résultats</span>
+                    </div>
+                </div>
+                
+                <div class="history-item">
+                    <div class="history-query">🔍 Comment faire un appariement ?</div>
+                    <div class="history-meta">
+                        <span>📅 21/10/2025</span>
+                        <span>✅ 6 résultats</span>
+                    </div>
+                </div>
+                
+                <div class="examples-section">
+                    <div class="history-header">🎯 Exemples de questions</div>
+                    <div class="example-tag">Comment créer un CD2I ?</div>
+                    <div class="example-tag">Gérer les absences</div>
+                    <div class="example-tag">Ordre SEPA</div>
+                    <div class="example-tag">Dashboard</div>
+                    <div class="example-tag">YouSign</div>
+                    <div class="example-tag">Attestation fiscale</div>
+                    <div class="example-tag">Planning</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align: center; padding: 30px; color: #666;">
+        <p><strong>🤖 Maquette de l'Assistant Kaizen IA</strong></p>
+        <p>Cette interface interactive sera accessible via http://localhost:8501</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">Version 1.0 - Octobre 2025</p>
+    </div>
+</body>
+</html>

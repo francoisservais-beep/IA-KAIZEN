@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistant Kaizen IA - Présentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 50px;
+            margin: 5px;
+            font-weight: bold;
+        }
+        
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .feature-card p {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+        
+        .files {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .file-card {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .file-card:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .file-card h4 {
+            color: #667eea;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .file-card .size {
+            color: #999;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .file-card p {
+            color: #666;
+            font-size: 0.95em;
+        }
+        
+        .quick-start {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .quick-start h2 {
+            color: white;
+            border-bottom-color: rgba(255,255,255,0.3);
+        }
+        
+        .code-block {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        
+        .code-block code {
+            color: #fff;
+            font-size: 1.1em;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card .number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .label {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            margin-top: 40px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .header, .section, .quick-start {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🤖 Assistant Kaizen IA</h1>
+            <p class="subtitle">Documentation Intelligente + Intégration Freshdesk</p>
+            <div>
+                <span class="badge">✅ Prêt à l'emploi</span>
+                <span class="badge">🚀 Facile à déployer</span>
+                <span class="badge">📚 261 pages indexées</span>
+                <span class="badge">🎫 Freshdesk intégré</span>
+            </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="section">
+            <h2>📊 En Chiffres</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="number">261</div>
+                    <div class="label">Pages du Manuel</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">7</div>
+                    <div class="label">Fichiers Livrés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">5</div>
+                    <div class="label">Minutes d'Installation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">100%</div>
+                    <div class="label">Fonctionnel</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fonctionnalités -->
+        <div class="section">
+            <h2>✨ Fonctionnalités Principales</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="icon">🔍</div>
+                    <h3>Recherche Intelligente</h3>
+                    <p>Trouve les informations pertinentes dans les 261 pages du manuel en quelques secondes</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">💡</div>
+                    <h3>Réponses Précises</h3>
+                    <p>Affiche les extraits pertinents avec références aux pages du manuel</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🎫</div>
+                    <h3>Tickets Freshdesk</h3>
+                    <p>Crée automatiquement des tickets avec résumé de recherche</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">📜</div>
+                    <h3>Historique</h3>
+                    <p>Sauvegarde et consultation des recherches précédentes</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">📊</div>
+                    <h3>Statistiques</h3>
+                    <p>Suivi des questions et de l'utilisation de l'assistant</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🎯</div>
+                    <h3>Interface Intuitive</h3>
+                    <p>Design moderne, responsive et facile à utiliser</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fichiers Livrés -->
+        <div class="section">
+            <h2>📦 Fichiers Livrés</h2>
+            <div class="files">
+                <div class="file-card">
+                    <h4>📱 kaizen_assistant.py</h4>
+                    <p class="size">15 KB</p>
+                    <p>Application web principale avec interface Streamlit complète</p>
+                </div>
+                <div class="file-card">
+                    <h4>🔌 freshdesk_integration.py</h4>
+                    <p class="size">8.3 KB</p>
+                    <p>Module d'intégration avec l'API Freshdesk</p>
+                </div>
+                <div class="file-card">
+                    <h4>⚙️ setup.py</h4>
+                    <p class="size">7.2 KB</p>
+                    <p>Script de configuration automatique et vérification</p>
+                </div>
+                <div class="file-card">
+                    <h4>📖 README.md</h4>
+                    <p class="size">5.4 KB</p>
+                    <p>Documentation complète et guide d'utilisation</p>
+                </div>
+                <div class="file-card">
+                    <h4>🚀 QUICKSTART.md</h4>
+                    <p class="size">8 KB</p>
+                    <p>Guide de démarrage rapide avec exemples</p>
+                </div>
+                <div class="file-card">
+                    <h4>📋 LIVRAISON.md</h4>
+                    <p class="size">12 KB</p>
+                    <p>Document de présentation du projet</p>
+                </div>
+                <div class="file-card">
+                    <h4>📦 requirements.txt</h4>
+                    <p class="size">18 B</p>
+                    <p>Liste des dépendances Python</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Start -->
+        <div class="quick-start">
+            <h2>🚀 Démarrage Rapide</h2>
+            
+            <h3>Étape 1 : Configuration</h3>
+            <div class="code-block">
+                <code>python setup.py</code>
+            </div>
+            
+            <h3>Étape 2 : Lancement</h3>
+            <div class="code-block">
+                <code>streamlit run kaizen_assistant.py</code>
+            </div>
+            
+            <h3>Étape 3 : Accès</h3>
+            <div class="code-block">
+                <code>🌐 http://localhost:8501</code>
+            </div>
+            
+            <p style="margin-top: 30px; font-size: 1.2em;">
+                ✅ <strong>Temps total : 5 minutes</strong>
+            </p>
+        </div>
+
+        <!-- Exemples de Questions -->
+        <div class="section">
+            <h2>💡 Exemples de Questions</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px;">
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; border-left: 4px solid #2196F3;">
+                    <strong>💼 Commercial</strong><br>
+                    • Comment créer un devis ?<br>
+                    • Qu'est-ce que l'AICI ?<br>
+                    • Devis mensualisé vs réel ?
+                </div>
+                <div style="background: #f3e5f5; padding: 15px; border-radius: 10px; border-left: 4px solid #9C27B0;">
+                    <strong>👥 RH</strong><br>
+                    • Comment créer un CD2I ?<br>
+                    • Gérer les absences ?<br>
+                    • Générer les bulletins de paie ?
+                </div>
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; border-left: 4px solid #4CAF50;">
+                    <strong>💰 Facturation</strong><br>
+                    • Générer une facture ?<br>
+                    • Ordre de prélèvement SEPA ?<br>
+                    • Attestation fiscale ?
+                </div>
+                <div style="background: #fff3e0; padding: 15px; border-radius: 10px; border-left: 4px solid #FF9800;">
+                    <strong>📅 Planning</strong><br>
+                    • Faire un appariement ?<br>
+                    • Accéder au planning ?<br>
+                    • Créneau global vs précis ?
+                </div>
+            </div>
+        </div>
+
+        <!-- Avantages -->
+        <div class="section">
+            <h2>🏆 Points Forts</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div style="padding: 20px; border-left: 5px solid #4CAF50;">
+                    <h3 style="color: #4CAF50; margin-bottom: 10px;">✅ Installation Rapide</h3>
+                    <p>Configuration automatisée en 5 minutes avec script setup.py</p>
+                </div>
+                <div style="padding: 20px; border-left: 5px solid #2196F3;">
+                    <h3 style="color: #2196F3; margin-bottom: 10px;">✅ Interface Intuitive</h3>
+                    <p>Design moderne et responsive accessible depuis n'importe quel navigateur</p>
+                </div>
+                <div style="padding: 20px; border-left: 5px solid #FF9800;">
+                    <h3 style="color: #FF9800; margin-bottom: 10px;">✅ Local & Sécurisé</h3>
+                    <p>Fonctionne en local, aucune dépendance cloud obligatoire</p>
+                </div>
+                <div style="padding: 20px; border-left: 5px solid #9C27B0;">
+                    <h3 style="color: #9C27B0; margin-bottom: 10px;">✅ Extensible</h3>
+                    <p>Architecture modulaire permettant ajouts de fonctionnalités</p>
+                </div>
+                <div style="padding: 20px; border-left: 5px solid #F44336;">
+                    <h3 style="color: #F44336; margin-bottom: 10px;">✅ Bien Documenté</h3>
+                    <p>3 guides complets : README, QUICKSTART, LIVRAISON</p>
+                </div>
+                <div style="padding: 20px; border-left: 5px solid #00BCD4;">
+                    <h3 style="color: #00BCD4; margin-bottom: 10px;">✅ Gratuit</h3>
+                    <p>Aucun coût d'API (sauf Freshdesk optionnel)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <h3>🎉 Votre Assistant Kaizen est Prêt !</h3>
+            <p style="font-size: 1.2em; margin: 20px 0;">
+                Téléchargez les fichiers et lancez-vous en 5 minutes
+            </p>
+            <p style="opacity: 0.8;">
+                Développé avec ❤️ pour Kangourou Kids<br>
+                Assistant Kaizen v1.0 - Octobre 2025
+            </p>
+        </div>
+    </div>
+</body>
+</html>
