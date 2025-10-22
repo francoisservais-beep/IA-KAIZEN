@@ -70,9 +70,24 @@ class KaizenAssistant:
     """Assistant IA pour la documentation Kaizen"""
     
     def __init__(self):
-        self.pdf_path = "/mnt/user-data/uploads/Kaizen_-_Manuel_ope_ratoire.pdf"
-        self.user_doc_path = "/mnt/user-data/uploads/Documentation_Utilisateur_KAIZEN.pdf"
-        self.history_file = "/home/claude/chat_history.json"
+        # Chemins adaptés pour Streamlit Cloud
+        # Chercher d'abord dans le répertoire courant, puis dans uploads
+        if os.path.exists("Kaizen_-_Manuel_ope_ratoire.pdf"):
+            self.pdf_path = "Kaizen_-_Manuel_ope_ratoire.pdf"
+        elif os.path.exists("/mnt/user-data/uploads/Kaizen_-_Manuel_ope_ratoire.pdf"):
+            self.pdf_path = "/mnt/user-data/uploads/Kaizen_-_Manuel_ope_ratoire.pdf"
+        else:
+            self.pdf_path = None
+            
+        if os.path.exists("Documentation_Utilisateur_KAIZEN.pdf"):
+            self.user_doc_path = "Documentation_Utilisateur_KAIZEN.pdf"
+        elif os.path.exists("/mnt/user-data/uploads/Documentation_Utilisateur_KAIZEN.pdf"):
+            self.user_doc_path = "/mnt/user-data/uploads/Documentation_Utilisateur_KAIZEN.pdf"
+        else:
+            self.user_doc_path = None
+        
+        # Utiliser un chemin temporaire accessible sur Streamlit Cloud
+        self.history_file = "chat_history.json"
         self.load_history()
         
     def load_history(self):
@@ -85,12 +100,23 @@ class KaizenAssistant:
     
     def save_history(self):
         """Sauvegarde l'historique des conversations"""
-        with open(self.history_file, 'w', encoding='utf-8') as f:
-            json.dump(st.session_state.history, f, ensure_ascii=False, indent=2)
+        try:
+            with open(self.history_file, 'w', encoding='utf-8') as f:
+                json.dump(st.session_state.history, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            # Si l'écriture échoue, on continue sans sauvegarder
+            st.warning(f"Impossible de sauvegarder l'historique : {str(e)}")
+            pass
     
     def search_in_pdf(self, query):
         """Recherche dans le PDF en utilisant pdftotext"""
         import subprocess
+        
+        # Vérifier que le PDF existe
+        if not self.pdf_path or not os.path.exists(self.pdf_path):
+            st.error("❌ Le fichier PDF du manuel Kaizen n'a pas été trouvé.")
+            st.info("💡 Assurez-vous que 'Kaizen_-_Manuel_ope_ratoire.pdf' est dans le même dossier que l'application.")
+            return []
         
         try:
             # Extraire le texte complet
